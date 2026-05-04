@@ -1,182 +1,166 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>原谅我好不好吗？</title>
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>问答</title>
 <style>
-    :root {
-        --bg: #fff5f7;
-        --text: #1c1c1e;
-        --yes: #34c759;
-        --no: #ff453a;
-    }
+:root{
+  --bg:#fff5f7;--text:#1c1c1e;--yes:#34c759;--no:#ff453a;
+}
+*,*-before,*-after{box-sizing:border-box;-webkit-font-smoothing:antialiased;}
+body{
+  margin:0;height:100vh;background:var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+  display:flex;justify-content:center;align-items:center;overflow:hidden;
+}
+.question-wrap{
+  text-align:center;
+  opacity:0;transform:translateY(30px) scale(0.96);
+  animation:qIn .5s cubic-bezier(.23,1.02,.52,.98) forwards;
+}
+.question{font-size:2.6rem;font-weight:600;color:var(--text);margin-bottom:56px;}
 
-    * {
-        box-sizing: border-box;
-        -webkit-font-smoothing: antialiased;
-    }
+.buttons{display:flex;gap:32px;justify-content:center;}
+.btn{
+  padding:14px 44px;font-size:1.4rem;font-weight:600;border:none;border-radius:14px;
+  cursor:pointer;color:#fff;will-change:transform;
+}
+.yes-btn{background:var(--yes);box-shadow:0 10px 30px rgba(52,199,89,.35);}
+.yes-btn:active{transform:scale(0.94);}
+.no-btn{
+  background:var(--no);box-shadow:0 10px 30px rgba(255,69,58,.35);
+  user-select:none;-webkit-tap-highlight-color:transparent;
+}
 
-    body {
-        margin: 0;
-        height: 100vh;
-        background: var(--bg);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                     Roboto, "Helvetica Neue", Arial;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-    }
+/* 碎末消散 */
+.question.shatter{
+  animation:none;
+}
+.question.shatter span{
+  display:inline-block;
+  animation:shatter .55s cubic-bezier(.2,.8,.3,1) forwards;
+}
+@keyframes qIn{
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+@keyframes shatter{
+  to{
+    opacity:0;
+    transform:translate(var(--sx,0),var(--sy,0)) rotate(var(--sr,0deg)) scale(0.2);
+  }
+}
 
-    .question {
-        font-size: 2.8rem;
-        font-weight: 600;
-        color: var(--text);
-        margin-bottom: 56px;
-        opacity: 0;
-        transform: translateY(20px);
-        animation: iosFadeIn 0.6s cubic-bezier(.23,1.02,.52,.98) forwards;
-    }
+/* 黑屏血字 */
+.blood-page{
+  position:fixed;inset:0;background:#000;display:flex;justify-content:center;align-items:center;
+  z-index:9999;cursor:pointer;
+}
+.blood-text{
+  color:#8b0000;
+  text-shadow:
+    0 0 6px rgba(139,0,0,.9),
+    0 0 18px rgba(139,0,0,.7),
+    0 0 40px rgba(139,0,0,.5),
+    2px 2px 0 rgba(70,0,0,.9);
+  font-size:2.8rem;font-weight:800;letter-spacing:.04em;
+  animation:bloodIn .6s ease-out forwards;
+  opacity:0;transform:scale(1.05);
+}
+@keyframes bloodIn{to{opacity:1;transform:scale(1);}}
 
-    .buttons {
-        display: flex;
-        gap: 32px;
-    }
-
-    .btn {
-        padding: 14px 44px;
-        font-size: 1.4rem;
-        font-weight: 600;
-        border: none;
-        border-radius: 14px;
-        cursor: pointer;
-        color: #fff;
-        will-change: transform;
-    }
-
-    .yes-btn {
-        background: var(--yes);
-        box-shadow: 0 10px 30px rgba(52,199,89,.35);
-    }
-
-    .yes-btn:active {
-        transform: scale(0.94);
-    }
-
-    .no-btn {
-        background: var(--no);
-        box-shadow: 0 10px 30px rgba(255,69,58,.35);
-        user-select: none;
-        -webkit-tap-highlight-color: transparent;
-        transition: transform 0.45s cubic-bezier(.23,1.02,.52,.98);
-    }
-
-    .toast {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0.85);
-        background: rgba(0,0,0,.85);
-        color: #fff;
-        padding: 16px 36px;
-        border-radius: 30px;
-        font-size: 1.2rem;
-        opacity: 0;
-        pointer-events: none;
-        transition: all 0.35s cubic-bezier(.23,1.02,.52,.98);
-    }
-
-    .toast.show {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-    }
-
-    @keyframes iosFadeIn {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* 爱心 */
-    .heart {
-        position: fixed;
-        pointer-events: none;
-        font-size: 18px;
-        animation: heartFly 1.2s ease-out forwards;
-        z-index: 9999;
-    }
-
-    @keyframes heartFly {
-        0% {
-            opacity: 1;
-            transform: translate(0, 0) scale(1);
-        }
-        100% {
-            opacity: 0;
-            transform: translate(var(--tx), var(--ty)) scale(0.4);
-        }
-    }
+/* 白屏结局 */
+.end-page{
+  position:fixed;inset:0;background:#fff;display:flex;justify-content:center;align-items:center;
+  z-index:9999;
+}
+.end-text{
+  font-size:2.6rem;font-weight:700;color:#1c1c1e;
+  animation:endIn .6s ease-out forwards;
+  opacity:0;transform:scale(1.05);
+}
+@keyframes endIn{to{opacity:1;transform:scale(1);}}
 </style>
 </head>
-
 <body>
-    <div class="question">原谅我,好不好吗?</div>
 
-    <div class="buttons">
-        <button class="btn yes-btn" id="yesBtn">Yes</button>
-        <button class="btn no-btn" id="noBtn">No</button>
-    </div>
+<div class="question-wrap" id="wrap">
+  <div class="question" id="question"></div>
+  <div class="buttons">
+    <button class="btn yes-btn" id="yesBtn">Yes</button>
+    <button class="btn no-btn" id="noBtn">No</button>
+  </div>
+</div>
 
-    <div class="toast" id="toast">爱你宝宝🥰</div>
+<script>
+const questions=[
+  "你爱我吗?",
+  "你想复合吗?",
+  "重来好不好?",
+  "我们和好吧"
+];
+let index=0;
+const wrap=document.getElementById("wrap");
+const questionEl=document.getElementById("question");
+const yesBtn=document.getElementById("yesBtn");
+const noBtn=document.getElementById("noBtn");
 
-    <script>
-        const yesBtn = document.getElementById("yesBtn");
-        const noBtn = document.getElementById("noBtn");
-        const toast = document.getElementById("toast");
+showQuestion();
 
-        yesBtn.addEventListener("click", () => {
-            showToast();
-            launchHearts();
-        });
+yesBtn.addEventListener("click",()=>{
+  shatterQuestion(()=>{
+    index++;
+    if(index>=questions.length){
+      goEnd();
+    }else{
+      showQuestion();
+    }
+  });
+});
 
-        noBtn.addEventListener("pointerdown", e => {
-            e.preventDefault();
-            moveNoOut();
-        });
+noBtn.addEventListener("pointerdown",e=>{
+  e.preventDefault();
+  goBlood();
+});
 
-        function showToast() {
-            toast.classList.add("show");
-            setTimeout(() => toast.classList.remove("show"), 2200);
-        }
+function showQuestion(){
+  questionEl.textContent=questions[index];
+  wrap.style.animation="none";
+  void wrap.offsetWidth;
+  wrap.style.animation="qIn .5s cubic-bezier(.23,1.02,.52,.98) forwards";
+}
 
-        function moveNoOut() {
-            const angle = Math.random() * Math.PI * 2;
-            const distance = Math.max(window.innerWidth, window.innerHeight) * 1.2;
+function shatterQuestion(cb){
+  const text=questionEl.textContent;
+  questionEl.innerHTML="";
+  questionEl.classList.add("shatter");
+  [...text].forEach(ch=>{
+    const s=document.createElement("span");
+    s.textContent=ch===" "?"\u00a0":ch;
+    const angle=Math.random()*Math.PI*2;
+    const dist=60+Math.random()*120;
+    s.style.setProperty("--sx",Math.cos(angle)*dist+"px");
+    s.style.setProperty("--sy",Math.sin(angle)*dist+"px");
+    s.style.setProperty("--sr",(Math.random()*120-60)+"deg");
+    s.style.animationDelay=(Math.random()*0.15)+"s";
+    questionEl.appendChild(s);
+  });
+  setTimeout(cb,750);
+}
 
-            const tx = Math.cos(angle) * distance;
-            const ty = Math.sin(angle) * distance;
+function goBlood(){
+  const div=document.createElement("div");
+  div.className="blood-page";
+  div.innerHTML='<div class="blood-text">那你去死吧</div>';
+  document.body.appendChild(div);
+}
 
-            noBtn.style.transform = `translate(${tx}px, ${ty}px)`;
-        }
-        
-        function launchHearts() {
-            for (let i = 0; i < 30; i++) {
-                const heart = document.createElement("div");
-                heart.className = "heart";
-                heart.innerHTML = ["💗","💖","💕","❤️"][Math.floor(Math.random()*4)];
-                heart.style.left = `${window.innerWidth/2}px`;
-                heart.style.top = `${window.innerHeight/2}px`;
-                heart.style.fontSize = `${14 + Math.random() * 16}px`;
-                heart.style.setProperty("--tx", `${(Math.random()-0.5)*700}px`);
-                heart.style.setProperty("--ty", `${(Math.random()-0.5)*700}px`);
-                document.body.appendChild(heart);
-                setTimeout(() => heart.remove(), 1200);
-            }
-        }
-    </script>
+function goEnd(){
+  const div=document.createElement("div");
+  div.className="end-page";
+  div.innerHTML='<div class="end-text">最爱你了🥰</div>';
+  document.body.appendChild(div);
+}
+</script>
 </body>
 </html>
